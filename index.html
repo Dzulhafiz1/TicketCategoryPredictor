@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Browser Test</title>
+  <script src="https://cdn.jsdelivr.net/npm/@xenova/transformers@2.16.1"></script>
+</head>
+<body>
+  <h1>Sentiment Test (runs in your browser)</h1>
+  <textarea id="text" rows="5" cols="50">I love this!</textarea><br/>
+  <button id="btn">Predict</button>
+  <pre id="out"></pre>
+
+  <script>
+    const { pipeline } = window.transformers;
+    let nlp;
+
+    async function init() {
+      nlp = await pipeline("text-classification",
+        "Xenova/distilbert-base-uncased-finetuned-sst-2-english");
+    }
+
+    async function predict() {
+      const text = document.getElementById("text").value;
+      const result = await nlp(text);
+      document.getElementById("out").textContent = JSON.stringify(result, null, 2);
+    }
+
+    document.getElementById("btn").addEventListener("click", predict);
+    init();
+  </script>
+</body>
+</html>
