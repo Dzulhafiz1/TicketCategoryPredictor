@@ -1,33 +1,57 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Browser Test</title>
-  <script src="https://cdn.jsdelivr.net/npm/@xenova/transformers@2.16.1"></script>
+  <meta charset="UTF-8">
+  <title>Excel Classifier Demo</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  <script defer src="clean.js"></script>
+  <script defer src="app.js"></script>
 </head>
 <body>
-  <h1>Sentiment Test (runs in your browser)</h1>
-  <textarea id="text" rows="5" cols="50">I love this!</textarea><br/>
-  <button id="btn">Predict</button>
-  <pre id="out"></pre>
+  <div class="container">
+    <!-- Left Panel -->
+    <div class="left">
+      <h3>📄 File Actions</h3>
+      <input type="file" id="upload" accept=".xlsx,.csv"><br/><br/>
+      <button id="run" disabled>Run Model</button><br/><br/>
+      <button id="export" disabled>Export Selected</button><br/><br/>
+      <progress id="progress" value="0" max="100"></progress>
 
-  <script>
-    const { pipeline } = window.transformers;
-    let nlp;
+      <h3>⚙️ Model</h3>
+      <p class="muted">(dummy predictions for now)</p>
+    </div>
 
-    async function init() {
-      nlp = await pipeline("text-classification",
-        "Xenova/distilbert-base-uncased-finetuned-sst-2-english");
-    }
+    <!-- Right Panel -->
+    <div class="right">
+      <div class="toolbar">
+        <label>Search: <input type="text" id="search"></label>
+        <label><input type="checkbox" id="selectAllRepeat"> Select All Repeat</label>
+      </div>
 
-    async function predict() {
-      const text = document.getElementById("text").value;
-      const result = await nlp(text);
-      document.getElementById("out").textContent = JSON.stringify(result, null, 2);
-    }
+      <div class="table-wrapper">
+        <table id="results">
+          <thead>
+            <tr>
+              <th>✓</th>
+              <th>Ticket ID</th>
+              <th>Problem Description</th>
+              <th>Prediction</th>
+              <th>Confidence</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
 
-    document.getElementById("btn").addEventListener("click", predict);
-    init();
-  </script>
+      <div id="tooltip"></div>
+    </div>
+  </div>
 </body>
 </html>
+
+<div class="stats">
+  <h4>📊 Safety Tickets</h4>
+  <div id="safetyCount">0</div>
+  <small id="totalCount">(out of 0 total)</small>
+</div>
